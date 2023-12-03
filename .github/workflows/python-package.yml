@@ -42,4 +42,4 @@ jobs:
         echo "## Model metrics" > report.md
         cat cml/metrics.txt > report.md
 
-        echo "<img width="300px" src="cml/metrics.jpg" alt="metrics jpg" />"
+        echo "<img width="300px" src="cml/metrics.jpg" alt="metrics jpg" />" > report.md
