@@ -57,6 +57,6 @@ jobs:
       env:
         EC2_PEM: ${{ secrets.EC2_TRAIN_SERVER_PEM }} # Can use the default token for most functions
       run: |
-        echo $EC2_PEM > train_server.pem
+        echo "${{ secrets.EC2_TRAIN_SERVER_PEM }}" | tr -d '\r' > train_server.pem
         chmod 400 train_server.pem
         ssh -t -i "train_server.pem" ubuntu@ec2-16-171-224-228.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script.sh
