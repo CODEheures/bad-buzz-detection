@@ -1,10 +1,14 @@
 import numpy as np
 
-toto_gro = 3
 
-# llllf
-
-
-def my_prettry_fun():
+def run():
     temp = np.arange(5)
     return temp
+
+
+def main():
+    run()
+
+
+if __name__ == "__main__":
+    main()
