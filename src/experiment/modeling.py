@@ -1,9 +1,9 @@
-import numpy as np
+import streamlit as st
 
 
 def run():
-    temp = np.arange(5)
-    return temp
+    st.write('Hello world')
+    return 5
 
 
 def main():
