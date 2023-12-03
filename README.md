@@ -1,6 +1,6 @@
 # Bad buzz detection
 
-This applicaion detect bad buzz.
+This ML application detect bad buzz.
 
 ## Modeling 
 This is a web page which we can train model. If model is good we can ask to publish it to production
@@ -10,6 +10,7 @@ This is a web page for end user. End user can predict tweet sentiment with this 
 
 ## CI/CD
 This repo use Continuous Integrating for Machine learning
+- Main Brach is protected. Merge request from non protected branch is required to commit modifications
 - With Github workflow to run pipelines on push Merge request 
 - Flake8 to Lint code and ensure PEP8 standard
 - PyTest to unit test of modules and functions
