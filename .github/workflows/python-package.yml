@@ -36,10 +36,13 @@ jobs:
       run: |
         pytest
     - name: Test CML
-      run: |
-        python cml/test.py
-
-        echo "## Model metrics" >> $GITHUB_STEP_SUMMARY
-        cat cml/metrics.txt >> $GITHUB_STEP_SUMMARY
-
-        echo "<img width="300px" src="cml/metrics.jpg" alt="metrics jpg" />" >> $GITHUB_STEP_SUMMARY
+      uses: iterative/setup-cml@v2
+      env:
+        REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Can use the default token for most functions
+        run: |
+          python cml/test.py
+    
+          echo "## Model metrics" > report.md
+          cat cml/metrics.txt >> report.md
+          echo '![](./cml/metrics.jpg)' >> report.md
+          cml comment create --publish report.md
