@@ -59,6 +59,4 @@ jobs:
       run: |
         echo $EC2_PEM > train_server.pem
         chmod 400 train_server.pem
-        ssh -i "train_server.pem" ubuntu@ec2-16-171-224-228.eu-north-1.compute.amazonaws.com
-        cd bad-buzz-detection
-        git pull origin main
+        ssh -t -i "train_server.pem" ubuntu@ec2-16-171-224-228.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script.sh
