@@ -4,6 +4,7 @@ This ML application detect bad buzz.
 
 ## Modeling 
 This is a web page which we can train model. If model is good we can ask to publish it to production
+See it at http://16.171.224.228:8501
 
 ## Production 
 This is a web page for end user. End user can predict tweet sentiment with this page
