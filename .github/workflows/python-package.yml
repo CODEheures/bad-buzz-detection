@@ -19,6 +19,7 @@ jobs:
         python-version: ["3.10"]
 
     steps:
+    - uses: iterative/setup-cml@v1
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
@@ -36,13 +37,12 @@ jobs:
       run: |
         pytest
     - name: Test CML
-      uses: iterative/setup-cml@v2
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Can use the default token for most functions
-        run: |
-          python cml/test.py
-    
-          echo "## Model metrics" > report.md
-          cat cml/metrics.txt >> report.md
-          echo '![](./cml/metrics.jpg)' >> report.md
-          cml comment create --publish report.md
+      run: |
+        python cml/test.py
+  
+        echo "## Model metrics" > report.md
+        cat cml/metrics.txt >> report.md
+        echo '![](./cml/metrics.jpg)' >> report.md
+        cml comment create --publish report.md
