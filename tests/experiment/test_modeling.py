@@ -2,4 +2,4 @@ from experiment import modeling
 
 
 def test_pretty_fun():
-    assert len(modeling.main()) == 5
+    assert len(modeling.run()) == 5
