@@ -45,5 +45,5 @@ jobs:
   
         echo "## Model metrics" >> report.md
         cat cml/metrics.txt >> report.md
-        echo '![](./cml/metrics.jpg)' >> report.md
+        # echo '![](./cml/metrics.jpg)' >> report.md
         cml comment create --publish report.md

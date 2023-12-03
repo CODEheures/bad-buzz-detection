@@ -1,4 +1,4 @@
-import plotly.express as px
+# import plotly.express as px
 
 
 def run():
@@ -6,9 +6,9 @@ def run():
         outfile.writelines("Train score: 0.0\n")
         outfile.writelines("Test score: 0.0\n")
 
-    df = px.data.iris()
-    fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
-    fig.write_image("cml/metrics.jpg")
+    # df = px.data.iris()
+    # fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
+    # fig.write_image("cml/metrics.jpg")
 
 
 def main():
