@@ -1,6 +1,5 @@
 # Personalized
 cml/*.txt
-cml/*jpg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
