@@ -40,9 +40,9 @@ jobs:
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Can use the default token for most functions
       run: |
-        python cml/test.py
+        python ./cml/test.py
   
-        echo "## Model metrics" > report.md
-        cat cml/metrics.txt >> report.md
+        echo "## Model metrics" >> report.md
+        cat ./cml/metrics.txt >> report.md
         echo '![](./cml/metrics.jpg)' >> report.md
         cml comment create --publish report.md
