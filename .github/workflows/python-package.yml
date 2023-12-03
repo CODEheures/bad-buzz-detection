@@ -36,7 +36,7 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-    - uses: iterative/setup-tools@v1
+    - uses: iterative/setup-cml@v1
     - name: Test CML
       env:
         REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Can use the default token for most functions
