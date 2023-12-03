@@ -6,5 +6,5 @@ toto_gro = 3
 
 
 def my_prettry_fun():
-    temp = np.arange(10)
+    temp = np.arange(5)
     return temp
