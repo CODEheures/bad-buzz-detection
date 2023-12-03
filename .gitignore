@@ -1,5 +1,6 @@
 # Personalized
-cml/*.txt
+cml/*
+!cml/test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
