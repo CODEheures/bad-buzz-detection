@@ -21,4 +21,4 @@ jobs:
       run: |
         echo "${{ secrets.EC2_TRAIN_SERVER_PEM }}" | tr -d '\r' > train_server.pem
         chmod 400 train_server.pem
-      # ssh -t -i "train_server.pem" ubuntu@ec2-16-171-224-228.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script.sh
+        ssh -T -i "train_server.pem" ubuntu@ec2-16-171-224-228.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script.sh
