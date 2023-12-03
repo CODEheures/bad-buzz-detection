@@ -1,3 +1,7 @@
 import numpy as np
 
-print(np.arange(10))
+toto_gro = 3
+
+# llllf
+def my_prettryFun():
+    print(np.arange(10))
