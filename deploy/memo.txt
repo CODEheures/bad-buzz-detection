@@ -10,3 +10,6 @@ cd ./bad-buzz-detection
 git pull origin main
 sudo pip install -r requirements.txt
 nohup sudo -b python3 -m streamlit run ./src/experiment/modeling.py --server.port 443 --server.sslCertFile /etc/letsencrypt/live/train.air-paradis.codeheures.fr/fullchain.pem --server.sslKeyFile /etc/letsencrypt/live/train.air-paradis.codeheures.fr/privkey.pem
+
+sudo ps aux | grep streamlit
+kill -9 xxxx
