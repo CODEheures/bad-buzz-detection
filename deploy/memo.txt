@@ -1,0 +1,12 @@
+git clone https://github.com/CODEheures/bad-buzz-detection.git
+sudo apt update
+sudo apt upgrade
+sudo apt install python3-pip
+
+lié domaine à l'IP
+https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
+
+cd ./bad-buzz-detection
+git pull origin main
+sudo pip install -r requirements.txt
+nohup sudo -b python3 -m streamlit run ./src/experiment/modeling.py --server.port 443 --server.sslCertFile /etc/letsencrypt/live/train.air-paradis.codeheures.fr/fullchain.pem --server.sslKeyFile /etc/letsencrypt/live/train.air-paradis.codeheures.fr/privkey.pem
