@@ -10,7 +10,7 @@ def run():
 
     # Specify what pages should be shown in the sidebar, and what their titles and icons
     # should be
-    current_dir = os.path.dirname(__file__)
+    currentDir = os.path.dirname(__file__)
     show_pages(
         [
             Page(current_dir + "/home.py", "Accueil", ":house:"),
