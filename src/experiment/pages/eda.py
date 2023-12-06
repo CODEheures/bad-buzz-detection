@@ -22,5 +22,3 @@ if 'dataframe' in ss:
     st.markdown('### Répartition de la Target en %')
     st.write("0 = Négatif | 4 = positif")
     st.bar_chart(df['target'].value_counts(normalize=True))
-
-
