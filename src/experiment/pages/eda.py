@@ -8,7 +8,7 @@ add_page_title()
 st.header("Analyse des données uploadées", divider='rainbow')
 
 if 'dataframe' in ss:
-    n_rows = st.number_input("Nombre de tweets à analyser", min_value=1000, max_value=1500000, value=1000)
+    n_rows = st.number_input("Nombre de tweets à analyser", min_value=1000, max_value=100000, value=1000)
     if n_rows is not None:
         df: pd.DataFrame = ss['dataframe'].sample(n_rows)
 
