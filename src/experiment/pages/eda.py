@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 from streamlit import session_state as ss
+from streamlit_extras.switch_page_button import switch_page
 from st_pages import add_page_title
+import home
 
 add_page_title()
 
-st.header("Analyse des données uploadées", divider='rainbow')
+st.header("Analyse des données importées", divider='rainbow')
 
 if 'dataframe' in ss:
     n_rows = st.number_input("Nombre de tweets à analyser", min_value=1000, max_value=100000, value=1000)
@@ -24,3 +26,8 @@ if 'dataframe' in ss:
         st.markdown('### Répartition de la Target en %')
         st.write("0 = Négatif | 4 = positif")
         st.bar_chart(df['target'].value_counts(normalize=True))
+
+        ss['analyse_ok'] = True
+        home.update_pages()
+        if st.button("Entrainement d'un Model"):
+            switch_page("Entrainement d'un Model")
