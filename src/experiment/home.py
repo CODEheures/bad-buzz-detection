@@ -33,6 +33,8 @@ def update_pages():
 
 def run():
     add_page_title()
+    update_pages()
+
     st.subheader("Entrainement en ligne de modèles pour de l'analyse de sentiment\n\
                  Auteur: Sylvain Gagnot", divider="rainbow")
 
@@ -47,8 +49,6 @@ def run():
 
     if (st.button("Importez les données")):
         switch_page("Import données")
-
-    update_pages()
 
 
 def test_function():
