@@ -3,4 +3,4 @@ from st_pages import add_page_title
 
 add_page_title()
 
-st.header("Cette page permet d'envoyer un model en production")
+st.header("Cette page permet d'envoyer un model en production", divider='rainbow')
