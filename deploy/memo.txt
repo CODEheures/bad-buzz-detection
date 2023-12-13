@@ -9,7 +9,8 @@ https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
 cd ./bad-buzz-detection
 git pull origin main
 sudo pip install -r requirements.txt
-nohup sudo -b python3 -m streamlit run ./src/experiment/modeling.py --server.port 443 --server.sslCertFile /etc/letsencrypt/live/train.air-paradis.codeheures.fr/fullchain.pem --server.sslKeyFile /etc/letsencrypt/live/train.air-paradis.codeheures.fr/privkey.pem
+nohup sudo -b python3 -m streamlit run ./src/main.py --server.port 8501
+nohup mlflow server --host 127.0.0.1
 
 sudo ps aux | grep streamlit
 kill -9 xxxx

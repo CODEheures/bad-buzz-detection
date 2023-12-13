@@ -3,7 +3,7 @@ from streamlit import session_state as ss
 from st_pages import add_page_title
 from streamlit_extras.switch_page_button import switch_page
 import pandas as pd
-import home
+from experiment import pages_management
 
 add_page_title()
 st.subheader("Importez vos données pour lancer l'analyse et acceder à la modélisation", divider="rainbow")
@@ -42,6 +42,6 @@ if uploaded_file:
     ss['dataframe'] = dataframe
     # dataframe.sample(100000).to_csv("tweets", index=False)
 
-    home.update_pages()
+    pages_management.update_pages()
     if st.button('Analyser les données'):
         switch_page("Analyse des données")
