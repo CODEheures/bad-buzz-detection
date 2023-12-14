@@ -10,7 +10,27 @@ cd ./bad-buzz-detection
 git pull origin main
 sudo pip install -r requirements.txt
 nohup sudo -b python3 -m streamlit run ./src/main.py --server.port 8501
-nohup mlflow server --host 127.0.0.1
+nohup mlflow server
 
 sudo ps aux | grep streamlit
 kill -9 xxxx
+
+
+##############################
+install and secure mlflow:
+https://medium.com/analytics-vidhya/setup-mlflow-on-aws-ec2-94b8e473618f
+
+obtenir id+secret S3:
+IAM => creer user => full S3 => generer clé
+
+server:
+pip install mlflow boto3
+apt install awscli
+awscli configure (id + secret)
+
+local:
+pip install mlflow boto3
+ajouter dans .venv/Script/activate.ps1
+$env:AWS_ACCESS_KEY_ID = "xxxx"
+$env:AWS_SECRET_ACCESS_KEY = "xxx"
+##############################

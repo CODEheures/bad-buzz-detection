@@ -6,8 +6,13 @@ This ML application detect bad buzz.
 This is a web page which we can train model. If model is good we can ask to publish it to production
 See it at https://train.air-paradis.codeheures.fr
 
+## MlFlow 
+This is a web page which we can validate model for production.
+See it at https://mlflow.air-paradis.codeheures.fr
+
 ## Production 
-This is a web page for end user. End user can predict tweet sentiment with this page
+This is a web page for end user. End user can predict tweet sentiment with this page.
+See it at https://predict.air-paradis.codeheures.fr
 
 ## CI/CD
 This repo use Continuous Integrating for Machine learning
