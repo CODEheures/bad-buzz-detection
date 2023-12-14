@@ -2,7 +2,7 @@ import streamlit as st
 from st_pages import add_page_title
 from streamlit import session_state as ss
 from streamlit_extras.switch_page_button import switch_page
-from common import text_processing
+from common import text_processing, setup_mlflow
 from experiment import pages_management
 import plotly.graph_objects as go
 from sklearn.model_selection import train_test_split
@@ -10,9 +10,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.compose import ColumnTransformer
 import pandas as pd
+import mlflow
+import os
 
 
 add_page_title()
+setup_mlflow.init_tracking('air-paradis')
+
 train_ok = False
 seed = 1234
 st.header("Cette page permet d'entrainer un model et d'obtenir les scores et graphiques associés", divider='rainbow')
@@ -53,31 +57,46 @@ if (model_name == "SVM"):
 
 if (st.button("Lancer l'entrainement")):
     with st.status("Preprocess data...", expanded=True) as status:
-        st.write('Découpage en Train/Validation/Test')
+        with mlflow.start_run():
+            params = {
+                "solver": "lbfgs",
+                "max_iter": 1000,
+                "multi_class": "auto",
+                "random_state": 8888,
+            }
 
-        df = ss['dataframe']
-        X = df.drop('target', axis=1)
-        y = df['target'].values
+            mlflow.log_param('test_params', params)
+            st.write('Découpage en Train/Validation/Test')
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size/100, random_state=seed)
-        X_validation, X_test, y_validation, y_test = train_test_split(X_test,
-                                                                      y_test,
-                                                                      test_size=test_size/(test_size + validation_size),
-                                                                      random_state=seed)
+            df = ss['dataframe']
+            X = df.drop('target', axis=1)
+            y = df['target'].values
 
-        st.markdown(
-            f"""
+            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size/100, random_state=seed)
+            X_validation, X_test, y_validation, y_test = train_test_split(X_test,
+                                                                          y_test,
+                                                                          test_size=test_size/(test_size + validation_size),
+                                                                          random_state=seed)
+
+            st.markdown(
+                f"""
 |Jeu|Longeur|
 |---|---|
 |Entrainement|{len(X_train)}|
 |Validation|{len(X_validation)}|
 |Test|{len(X_test)}|
-            """
-        )
+                """
+            )
 
-        X_transform = preprocessor.fit_transform(X_train, y_train)
-        st.write(pd.DataFrame(X_transform).sample(10, random_state=seed))
-        status.update(label="Fin du traitement", state="complete")
+            X_transform = preprocessor.fit_transform(X_train, y_train)
+
+            # Test MlFlow
+            pd.DataFrame(X_transform).to_csv('test_artifact.csv')
+            mlflow.log_artifact('test_artifact.csv')
+            os.remove('test_artifact.csv') 
+
+            st.write(pd.DataFrame(X_transform).sample(10, random_state=seed))
+            status.update(label="Fin du traitement", state="complete")
 
 if (train_ok and st.button("Je valide ce model et passe à la demande de déploiment", disabled=~train_ok)):
     ss['deploy_ok'] = True
