@@ -93,7 +93,7 @@ if (st.button("Lancer l'entrainement")):
             # Test MlFlow
             pd.DataFrame(X_transform).to_csv('test_artifact.csv')
             mlflow.log_artifact('test_artifact.csv')
-            os.remove('test_artifact.csv') 
+            os.remove('test_artifact.csv')
 
             st.write(pd.DataFrame(X_transform).sample(10, random_state=seed))
             status.update(label="Fin du traitement", state="complete")
