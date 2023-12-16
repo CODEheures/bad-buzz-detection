@@ -2,20 +2,15 @@ import streamlit as st
 from st_pages import add_page_title
 from streamlit import session_state as ss
 from streamlit_extras.switch_page_button import switch_page
-from common import text_processing, setup_mlflow
+from common import pipelines, splitter
 from experiment import pages_management
 import plotly.graph_objects as go
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import FunctionTransformer
-from sklearn.compose import ColumnTransformer
 import pandas as pd
 import mlflow
 import os
 
 
 add_page_title()
-setup_mlflow.init_tracking('air-paradis')
 
 train_ok = False
 seed = 1234
@@ -42,41 +37,24 @@ model_name = st.selectbox("Choix du model",
                           placeholder="Selectionnez un model...")
 
 if (model_name == "SVM"):
-    text_transformer = Pipeline(
-        steps=[
-            ('preprocess_text', FunctionTransformer(text_processing.preprocess_text))
-        ]
-    )
-
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('text', text_transformer, ['text'])
-        ]
-    )
+    min_df = st.slider("Ignorer les mots qui apparaisent moins de n fois", min_value=1, max_value=10, value=1)
+    max_df = st.slider("ignorer les x% des mots les plus fréqents", min_value=0, max_value=10, value=0)
+    n_gram_range = st.slider('Rang des N_grams', min_value=1, max_value=4, value=(1, 1))
+    preprocessor = pipelines.svm(min_df=min_df,
+                                 max_df=(1-max_df/100),
+                                 ngram_range=n_gram_range)
+    model_ready = True
+else:
+    model_ready = False
 
 
-if (st.button("Lancer l'entrainement")):
+if (model_ready and st.button("Lancer l'entrainement")):
     with st.status("Preprocess data...", expanded=True) as status:
         with mlflow.start_run():
-            params = {
-                "solver": "lbfgs",
-                "max_iter": 1000,
-                "multi_class": "auto",
-                "random_state": 8888,
-            }
-
-            mlflow.log_param('test_params', params)
-            st.write('Découpage en Train/Validation/Test')
-
-            df = ss['dataframe']
-            X = df.drop('target', axis=1)
-            y = df['target'].values
-
-            X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size/100, random_state=seed)
-            X_validation, X_test, y_validation, y_test = train_test_split(X_test,
-                                                                          y_test,
-                                                                          test_size=test_size/(test_size + validation_size),
-                                                                          random_state=seed)
+            st.markdown('1. Découpage en Train/Validation/Test')
+            X_train, X_validation, X_test, y_train, y_validation, y_test = splitter.split(train_size=train_size,
+                                                                                          validation_size=validation_size,
+                                                                                          test_size=test_size)
 
             st.markdown(
                 f"""
@@ -88,9 +66,11 @@ if (st.button("Lancer l'entrainement")):
                 """
             )
 
+            st.markdown('2. Préprocessing')
             X_transform = preprocessor.fit_transform(X_train, y_train)
 
             # Test MlFlow
+            mlflow.log_param('test_params', preprocessor.get_params(deep=False))
             pd.DataFrame(X_transform).to_csv('test_artifact.csv')
             mlflow.log_artifact('test_artifact.csv')
             os.remove('test_artifact.csv')

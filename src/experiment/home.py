@@ -1,10 +1,13 @@
 import streamlit as st
+from streamlit import session_state as ss
 from st_pages import add_page_title
 from streamlit_extras.switch_page_button import switch_page
 from experiment import pages_management
+from common import setup_mlflow
 
 
 def run():
+    setup_mlflow.init_tracking('air-paradis')
     pages_management.update_pages()
     add_page_title()
 
@@ -20,8 +23,9 @@ Les étapes sont les suivantes:
 4. Envoi de la demande de publication si le modèle donne des résultats satisfaisants
                 """)
 
-    if (st.button("Importez les données")):
-        switch_page("Import données")
+    if ('mlflow_ready' in ss):
+        if (st.button("Importez les données")):
+            switch_page("Import données")
 
 
 def test_function():
@@ -29,9 +33,5 @@ def test_function():
     return 5
 
 
-def main():
-    run()
-
-
 if __name__ == "__main__":
-    main()
+    run()

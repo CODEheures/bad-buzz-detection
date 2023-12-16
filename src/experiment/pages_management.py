@@ -9,9 +9,11 @@ def update_pages():
     current_dir = os.path.dirname(__file__)
 
     pages = [
-        Page(current_dir + "/home.py", "Accueil", ":house:"),
-        Page(current_dir + "/pages/upload.py", "Import données"),
+        Page(current_dir + "/home.py", "Accueil", ":house:")
     ]
+
+    if ('mlflow_ready' in ss):
+        pages.append(Page(current_dir + "/pages/upload.py", "Import données"))
 
     if ('dataframe' in ss):
         pages.append(Page(current_dir + "/pages/eda.py", "Analyse des données"))
