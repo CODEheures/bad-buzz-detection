@@ -21,9 +21,6 @@ def update_pages():
     if ('analyse_ok' in ss):
         pages.append(Page(current_dir + "/pages/train.py", "Entrainement d'un Model"))
 
-    if ('deploy_ok' in ss):
-        pages.append(Page(current_dir + "/pages/deploy.py", "Deploiement d'un Model"))
-
     show_pages(
         pages
     )

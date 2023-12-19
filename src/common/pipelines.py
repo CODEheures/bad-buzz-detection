@@ -1,8 +1,7 @@
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.compose import ColumnTransformer
+from sklearn.svm import SVC
 from common import text_processing
-import streamlit as st
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
@@ -17,10 +16,16 @@ class TextSelector(BaseEstimator, TransformerMixin):
         return X[self.field]
 
 
-def svm(min_df, max_df, ngram_range):
+def svm(min_df,
+        max_df,
+        ngram_range,
+        C,   # noqa= N803
+        degree,
+        kernel,
+        gamma,
+        seed=1234):
     pipeline = Pipeline(
         steps=[
-            ('text_selection', TextSelector('text')),
             ('vectorize_text', TfidfVectorizer(preprocessor=text_processing.preprocess_text,
                                                tokenizer=text_processing.tokenize,
                                                token_pattern=None,
@@ -28,7 +33,13 @@ def svm(min_df, max_df, ngram_range):
                                                sublinear_tf=True,
                                                ngram_range=ngram_range,
                                                min_df=min_df,
-                                               max_df=max_df))
+                                               max_df=max_df)),
+            ('modelize', SVC(C=C,
+                             degree=degree,
+                             kernel=kernel,
+                             gamma=gamma,
+                             random_state=seed,
+                             ))
         ]
     )
 

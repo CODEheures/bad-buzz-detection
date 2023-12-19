@@ -2,9 +2,10 @@ import mlflow
 import streamlit as st
 from streamlit import session_state as ss
 
+tracking_uri = "https://mlflow.air-paradis.codeheures.fr"
+
 
 def init_tracking(experiment_name):
-    tracking_uri = "https://mlflow.air-paradis.codeheures.fr"
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.tracking.MlflowClient(tracking_uri=tracking_uri)
 
@@ -22,3 +23,11 @@ def init_tracking(experiment_name):
         ss['mlflow_ready'] = True
         xp_path = f'#/experiments/{experiment.experiment_id}'
         st.success(f"Mlflow initialisé avec succès! Visitez l\'adresse suivante: {tracking_uri}{xp_path}")
+
+
+def publish_model(run: mlflow.ActiveRun, model_name):
+    model = run.info.artifact_uri
+    st.write(model)
+    # mlflow.register_model(f"runs:/{run_id}/air-paradis", model_name)
+    st.success(f"""Model enregistré dans le registre des models.
+                Promouvoir celui en production en suivant ce lien {tracking_uri}""")
