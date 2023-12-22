@@ -1,7 +1,7 @@
 from nltk.corpus import stopwords
 from nltk import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer
-import streamlit as st
+
 
 def stop_words():
     return stopwords.words('english')

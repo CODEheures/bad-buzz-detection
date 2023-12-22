@@ -37,5 +37,5 @@ if 'dataframe' in ss:
 
         ss['analyse_ok'] = True
         pages_management.update_pages()
-        if st.button("Entrainement d'un Model"):
-            switch_page("Entrainement d'un Model")
+        if st.button("Partitionner les données"):
+            switch_page("Partitionner les données")

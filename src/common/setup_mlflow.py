@@ -1,33 +1,43 @@
 import mlflow
 import streamlit as st
+from common import params
 from streamlit import session_state as ss
 
-tracking_uri = "https://mlflow.air-paradis.codeheures.fr"
+
+def init_mlflow():
+    mlflow.set_tracking_uri(params.tracking_uri)
+    mlflow.tracking.MlflowClient(tracking_uri=params.tracking_uri)
 
 
 def init_tracking(experiment_name):
-    mlflow.set_tracking_uri(tracking_uri)
-    mlflow.tracking.MlflowClient(tracking_uri=tracking_uri)
+    init_mlflow()
 
     experiment = mlflow.get_experiment_by_name(experiment_name)
     if experiment is None:
         try:
-            s3_bucket = "s3://codeheures/mlflow-air-paradis/"
+            s3_bucket = params.s3_uri
             experiment = mlflow.create_experiment(experiment_name, s3_bucket)
         except Exception:
             st.error(f"""MlFlow: Impossible de récupérer ou créer l\'experience MlFlow.
-                     Vérifier l\'état du serveur à l\'adresse suivante: {tracking_uri}""")
+                     Vérifier l\'état du serveur à l\'adresse suivante: {params.tracking_uri}""")
 
     if (experiment is not None):
         mlflow.set_experiment(experiment_name=experiment_name)
         ss['mlflow_ready'] = True
         xp_path = f'#/experiments/{experiment.experiment_id}'
-        st.success(f"Mlflow initialisé avec succès! Visitez l\'adresse suivante: {tracking_uri}{xp_path}")
+        st.success(f"Mlflow initialisé avec succès! Visitez l\'adresse suivante: {params.tracking_uri}{xp_path}")
 
 
-def publish_model(run: mlflow.ActiveRun, model_name):
-    model = run.info.artifact_uri
-    st.write(model)
-    # mlflow.register_model(f"runs:/{run_id}/air-paradis", model_name)
+def publish_model():
+    run: mlflow.ActiveRun = ss['run']
+    model = ss['selected_model']
+    train_name = ss['train_name']
+    user_name = ss['user_name']
+
+    mlflow.register_model(f"runs:/{run.info.run_id}/{params.model_name}",
+                          'air-paradis',
+                          tags={'model': model,
+                                'entraiment': train_name,
+                                'entraineur': user_name})
     st.success(f"""Model enregistré dans le registre des models.
-                Promouvoir celui en production en suivant ce lien {tracking_uri}""")
+                Promouvoir celui en production en suivant ce lien {params.tracking_uri}""")
