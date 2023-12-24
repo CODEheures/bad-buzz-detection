@@ -2,13 +2,17 @@ git clone https://github.com/CODEheures/bad-buzz-detection.git
 sudo apt update
 sudo apt upgrade
 sudo apt install python3-pip
+sudo apt install python3.10-venv
 
 lié domaine à l'IP
 https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
 
 cd ./bad-buzz-detection
 git pull origin main
-sudo pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 -m nltk.downloader popular
 nohup sudo -b python3 -m streamlit run ./src/train.py --server.port 8501
 nohup sudo -b python3 -m streamlit run ./src/predict.py --server.port 8502
 nohup sudo -b mlflow server --workers 1
