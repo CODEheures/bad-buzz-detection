@@ -33,7 +33,7 @@ jobs:
         flake8 . --count
     - name: Test with pytest
       run: |
-        pytest
+        python -m pytest
     - uses: iterative/setup-cml@v1
     - name: Test CML
       env:
