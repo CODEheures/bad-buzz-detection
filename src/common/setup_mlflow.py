@@ -2,6 +2,7 @@ import mlflow
 import streamlit as st
 from common import params
 from streamlit import session_state as ss
+from mlflow.store.artifact.runs_artifact_repo import RunsArtifactRepository
 
 
 def init_mlflow():
@@ -31,13 +32,19 @@ def init_tracking(experiment_name):
 def publish_model():
     run: mlflow.ActiveRun = ss['run']
     model = ss['selected_model']
-    train_name = ss['train_name']
     user_name = ss['user_name']
+    description = ss['description']
 
-    mlflow.register_model(f"runs:/{run.info.run_id}/{params.model_name}",
-                          'air-paradis',
-                          tags={'model': model,
-                                'entraiment': train_name,
-                                'entraineur': user_name})
+    client = mlflow.client.MlflowClient(tracking_uri=params.tracking_uri)
+
+    model_src = RunsArtifactRepository.get_underlying_uri(f"runs:/{run.info.run_id}/model")
+    st.write(model_src)
+    client.create_model_version(name=params.model_name,
+                                source=model_src,
+                                run_id=run.info.run_id,
+                                description=description,
+                                tags={'model': model,
+                                      'entraineur': user_name})
+
     st.success(f"""Model enregistré dans le registre des models.
                 Promouvoir celui en production en suivant ce lien {params.tracking_uri}""")

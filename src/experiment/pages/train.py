@@ -6,6 +6,8 @@ import pandas as pd
 from common import params
 from streamlit_extras.switch_page_button import switch_page
 from experiment import pages_management
+from mlflow.models import infer_signature
+import numpy as np
 
 
 add_page_title()
@@ -15,7 +17,7 @@ with st.status("Preprocess data...", expanded=True) as status:
     if (('train_ok' not in ss) or (ss['train_ok'] is False)):
         mlflow.end_run()
         with mlflow.start_run() as run:
-            mlflow.autolog()
+            mlflow.sklearn.autolog()
             if (ss['selected_model'] == params.model_enum.SVM.name):
                 st.markdown('1. Entrainement')
                 ss['model'].fit(ss['X_train'], ss['y_train'])
@@ -47,8 +49,8 @@ with st.status("Preprocess data...", expanded=True) as status:
 if (ss['train_ok']):
     pages_management.update_pages()
     user_name = st.text_input('Votre nom', placeholder='Renseigner votre nom...')
-    train_name = st.text_input('Nom de l\'entrainement', placeholder='Donner un nom à cet entrainement...')
-    if user_name and train_name and st.button("Publier ce model"):
+    description = st.text_input('Description de l\'entrainement', placeholder='Donner une description de cet entrainement...')
+    if user_name and description and st.button("Publier ce model"):
         ss['user_name'] = user_name
-        ss['train_name'] = train_name
+        ss['description'] = description
         switch_page("Publication model")
