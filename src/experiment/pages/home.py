@@ -25,8 +25,3 @@ if ('mlflow_ready' in ss):
     pages_management.update_pages()
     if (st.button("Importez les données")):
         switch_page("Import données")
-
-
-def test_function():
-    st.write('Hello world Sylvain')
-    return 5
