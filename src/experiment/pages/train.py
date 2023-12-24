@@ -6,8 +6,6 @@ import pandas as pd
 from common import params
 from streamlit_extras.switch_page_button import switch_page
 from experiment import pages_management
-from mlflow.models import infer_signature
-import numpy as np
 
 
 add_page_title()
