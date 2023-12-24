@@ -1,4 +1,4 @@
-from experiment import home
+from src.experiment.pages import home
 
 
 def test_function():
