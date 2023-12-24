@@ -1,5 +1,5 @@
-from src.experiment.pages import home
+from src import train
 
 
 def test_function():
-    assert home.test_function() == 5
+    assert train.test_function() == 5
