@@ -2,17 +2,15 @@ git clone https://github.com/CODEheures/bad-buzz-detection.git
 sudo apt update
 sudo apt upgrade
 sudo apt install python3-pip
-sudo apt install python3.10-venv
+sudo apt install nginx
 
 lié domaine à l'IP
 https://certbot.eff.org/instructions?ws=other&os=ubuntufocal
 
 cd ./bad-buzz-detection
 git pull origin main
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python3 -m nltk.downloader popular
+sudo pip install -r requirements.txt
+sudo python3 -m nltk.downloader popular
 nohup sudo -b python3 -m streamlit run ./src/train.py --server.port 8501
 nohup sudo -b python3 -m streamlit run ./src/predict.py --server.port 8502
 nohup sudo -b mlflow server --workers 1
@@ -31,7 +29,7 @@ IAM => creer user => full S3 => generer clé
 server:
 pip install mlflow boto3
 apt install awscli
-sudo awscli configure (id + secret)
+sudo aws configure (id + secret)
 
 local:
 pip install mlflow boto3

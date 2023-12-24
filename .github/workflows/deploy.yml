@@ -22,7 +22,9 @@ jobs:
         echo "${{ secrets.EC2_TRAIN_SERVER_PEM }}" > train_server.pem
         chmod 400 train_server.pem
         mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-        ssh-keyscan ec2-16-171-224-228.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+        ssh-keyscan ec2-51-20-93-60.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+        ssh-keyscan ec2-51-20-248-99.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
         eval $(ssh-agent)
         ssh-add - <<< "${{ secrets.EC2_TRAIN_SERVER_PEM }}"
-        ssh -T -i "train_server.pem" ubuntu@ec2-16-171-224-228.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script.sh
+        ssh -T -i "train_server.pem" ubuntu@ec2-51-20-248-99.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script-train-server.sh
+        ssh -T -i "train_server.pem" ubuntu@ec2-51-20-93-60.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script-predict-server.sh
