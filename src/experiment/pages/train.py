@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from st_pages import add_page_title
 from streamlit import session_state as ss
@@ -28,7 +29,14 @@ with st.status("Preprocess data...", expanded=True) as status:
 
                 df_test = pd.DataFrame(ss['X_test'], columns=['text'])
                 df_test['target'] = ss['y_test']
-                dataset = mlflow.data.from_pandas(df_test)
+
+                file_name = f'{run.info.run_id}.csv'
+                df_test.to_csv(file_name, index=False)
+                mlflow.log_artifact(file_name, 'df_test')
+                os.remove(file_name)
+                uri = mlflow.get_artifact_uri('df_test') + '/' + file_name
+                st.write(uri)
+                dataset = mlflow.data.from_pandas(df_test, uri)
                 mlflow.log_input(dataset, context='test')
 
                 ss['run'] = run
