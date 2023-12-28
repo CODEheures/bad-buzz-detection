@@ -4,6 +4,8 @@ from api import predict
 
 
 def run():
+    """Entry point to display Predict page
+    """
     if ('predictions' not in ss):
         ss['predictions'] = []
 

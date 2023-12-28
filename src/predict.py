@@ -2,6 +2,8 @@ from prediction import predict
 
 
 def main():
+    """Entry point for streamlit Predict App
+    """
     predict.run()
 
 

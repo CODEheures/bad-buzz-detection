@@ -4,11 +4,18 @@ import streamlit as st
 
 
 def main():
+    """Entry point for streamlit Train App
+    """
     pages_management.update_pages()
     switch_page("Accueil")
 
 
 def test_function():
+    """A faker function to run pytest on github pipeline
+
+    Returns:
+        int: a random value to test in pytest
+    """
     st.write('Hello world Sylvain')
     return 5
 

@@ -2,13 +2,12 @@
 
 
 def run():
+    """Write some commentaries in Pull request.
+    We can improve this function to give some decision elements to user who merge the pull request
+    """
     with open("./cml/metrics.txt", "w") as outfile:
         outfile.writelines("Train score: 0.0\n")
         outfile.writelines("Test score: 42\n")
-
-    # df = px.data.iris()
-    # fig = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
-    # fig.write_image("cml/metrics.jpg")
 
 
 def main():
