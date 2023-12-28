@@ -14,6 +14,7 @@ sudo python3 -m nltk.downloader popular
 nohup sudo -b python3 -m streamlit run ./src/train.py --server.port 8501
 nohup sudo -b python3 -m streamlit run ./src/predict.py --server.port 8502
 nohup sudo -b mlflow server --workers 1
+nohup sudo -b uvicorn --app-dir=./src api:app
 
 sudo ps aux | grep streamlit
 kill -9 xxxx
