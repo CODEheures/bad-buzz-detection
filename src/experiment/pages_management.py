@@ -4,8 +4,8 @@ from st_pages import Page, show_pages
 
 
 def update_pages():
-    # Specify what pages should be shown in the sidebar, and what their titles and icons
-    # should be
+    """Update train experiment pages by current step
+    """
     current_dir = os.path.normpath(os.path.dirname(__file__))
 
     pages = [

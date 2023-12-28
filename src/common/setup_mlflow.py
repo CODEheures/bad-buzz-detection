@@ -6,11 +6,18 @@ from mlflow.store.artifact.runs_artifact_repo import RunsArtifactRepository
 
 
 def init_mlflow():
+    """Initialized Mlflow
+    """
     mlflow.set_tracking_uri(params.tracking_uri)
     mlflow.tracking.MlflowClient(tracking_uri=params.tracking_uri)
 
 
-def init_tracking(experiment_name):
+def init_tracking(experiment_name: str):
+    """Initialized the tracking on train
+
+    Args:
+        experiment_name (str): Name of the experiment; Ex: air-paradis
+    """
     init_mlflow()
 
     experiment = mlflow.get_experiment_by_name(experiment_name)
@@ -30,6 +37,8 @@ def init_tracking(experiment_name):
 
 
 def publish_model():
+    """Create a new model version of the current run on MlFlow register
+    """
     run: mlflow.ActiveRun = ss['run']
     model = ss['selected_model']
     user_name = ss['user_name']

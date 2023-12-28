@@ -6,8 +6,20 @@ import boto3
 from sklearn.metrics import accuracy_score
 from mlflow.entities.model_registry import ModelVersion
 
+setup_mlflow.init_mlflow()
+client = mlflow.MlflowClient()
+models = client.search_model_versions("name='air-paradis'")
+
 
 def format_select_model(model: ModelVersion) -> str:
+    """Format model to string to display on select option
+
+    Args:
+        model (ModelVersion): The model to format
+
+    Returns:
+        str: The formatting model to string
+    """
     label = '*' if 'production' in model.aliases else ''
     label += f"Version {model.version}"
     label += f": {model.description}"
@@ -15,11 +27,9 @@ def format_select_model(model: ModelVersion) -> str:
 
 
 def run():
-    setup_mlflow.init_mlflow()
+    """Entry point to display Test page
+    """
     st.header("Test model", divider='rainbow')
-
-    client = mlflow.MlflowClient()
-    models = client.search_model_versions("name='air-paradis'")
 
     selected_model = st.selectbox('Evaluer un model avec le jeu de test',
                                   [model for model in models],
