@@ -13,21 +13,11 @@ def run():
 
     if tweet:
         response = predict.run(tweet=tweet)
-
-        ss['predictions'].append(
-            {"tweet": tweet, "predict": response}
-        )
+        ss['predictions'].append(response)
 
     table = ''
     for prediction in reversed(ss['predictions']):
-        p_tweet = prediction['tweet']
-        if prediction['predict'] == 0:
-            positif = ''
-            negagtif = ':-1:'
-        else:
-            positif = ':+1:'
-            negagtif = ''
-        table = table + f'\n|{p_tweet}|{positif}|{negagtif}|'
+        table = table + f'\n|{prediction.tweet}|{prediction.icon_positif}|{prediction.icon_negatif}|'
 
     st.markdown(
         f"""

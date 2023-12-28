@@ -5,4 +5,4 @@ app = FastAPI()
 
 @app.get("/predict")
 def prediction(tweet: str):
-    return predict.run(tweet=tweet)
+    return predict.run(tweet=tweet).asdict()
