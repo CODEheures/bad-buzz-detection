@@ -35,7 +35,6 @@ with st.status("Preprocess data...", expanded=True) as status:
                 mlflow.log_artifact(file_name, 'df_test')
                 os.remove(file_name)
                 uri = mlflow.get_artifact_uri('df_test') + '/' + file_name
-                st.write(uri)
                 dataset = mlflow.data.from_pandas(df_test, uri)
                 mlflow.log_input(dataset, context='test')
 
