@@ -30,7 +30,7 @@ def split(sample_count: int,
     df: pd.DataFrame = ss['dataframe']
     df_sample = df.sample(n=sample_count, random_state=seed)
     X = df_sample.text.to_numpy()  # noqa: N806
-    y = df_sample.target.to_numpy()
+    y = (df_sample.target.to_numpy() > 0).astype(int)
 
     X_train, X_test, y_train, y_test = train_test_split(X,  # noqa: N806
                                                         y,

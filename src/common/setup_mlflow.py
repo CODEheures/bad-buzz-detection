@@ -47,12 +47,11 @@ def publish_model():
     client = mlflow.client.MlflowClient(tracking_uri=params.tracking_uri)
 
     model_src = RunsArtifactRepository.get_underlying_uri(f"runs:/{run.info.run_id}/model")
-    st.write(model_src)
     client.create_model_version(name=params.model_name,
                                 source=model_src,
                                 run_id=run.info.run_id,
                                 description=description,
-                                tags={'model': model,
+                                tags={'model': params.model_name(model),
                                       'entraineur': user_name})
 
     st.success(f"""Model enregistré dans le registre des models.

@@ -7,6 +7,7 @@ import pandas as pd
 from common import params
 from streamlit_extras.switch_page_button import switch_page
 from experiment import pages_management
+from common.keras_callback import TrainCallback
 
 
 add_page_title()
@@ -16,8 +17,8 @@ with st.status("Preprocess data...", expanded=True) as status:
     if (('train_ok' not in ss) or (ss['train_ok'] is False)):
         mlflow.end_run()
         with mlflow.start_run() as run:
-            mlflow.sklearn.autolog()
-            if (ss['selected_model'] == params.model_enum.SVM.name):
+            if (ss['selected_model'] == params.model_enum.SVM):
+                mlflow.sklearn.autolog()
                 st.markdown('1. Entrainement')
                 ss['model'].fit(ss['X_train'], ss['y_train'])
                 st.write([f"{key}: {value:.4f}"
@@ -26,19 +27,41 @@ with st.status("Preprocess data...", expanded=True) as status:
                 st.markdown('2. Validation')
                 ss['score'] = ss['model'].score(ss['X_validation'], ss['y_validation'])
                 st.write(f"Score du model: {ss['score']:.4f}")
+            elif (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_embedding):
+                mlflow.tensorflow.autolog()
+                st.markdown('1. Entrainement')
+                ss['model'].fit(ss['X_train'],
+                                ss['y_train'],
+                                validation_data=(ss['X_validation'], ss['y_validation']),
+                                epochs=ss['epochs'],
+                                batch_size=ss['batch_size'],
+                                verbose=0,
+                                callbacks=[TrainCallback()]
+                                )
+                st.write([f"{key}: {value:.4f}"
+                         for key, value
+                         in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
+                st.markdown('2. Validation')
+                score = ss['model'].evaluate(ss['X_validation'],
+                                             ss['y_validation'],
+                                             batch_size=ss['batch_size'],
+                                             verbose=0,
+                                             callbacks=[TrainCallback()]
+                                             )
+                ss['score'] = score[1]
+                st.write(f"Accuracy du model: {ss['score']:.4f}")
 
-                df_test = pd.DataFrame(ss['X_test'], columns=['text'])
-                df_test['target'] = ss['y_test']
+            df_test = pd.DataFrame(ss['X_test'], columns=['text'])
+            df_test['target'] = ss['y_test']
 
-                file_name = f'{run.info.run_id}.csv'
-                df_test.to_csv(file_name, index=False)
-                mlflow.log_artifact(file_name, 'df_test')
-                os.remove(file_name)
-                uri = mlflow.get_artifact_uri('df_test') + '/' + file_name
-                dataset = mlflow.data.from_pandas(df_test, uri)
-                mlflow.log_input(dataset, context='test')
-
-                ss['run'] = run
+            file_name = f'{run.info.run_id}.csv'
+            df_test.to_csv(file_name, index=False)
+            mlflow.log_artifact(file_name, 'df_test')
+            os.remove(file_name)
+            uri = mlflow.get_artifact_uri('df_test') + '/' + file_name
+            dataset = mlflow.data.from_pandas(df_test, uri)
+            mlflow.log_input(dataset, context='test')
+            ss['run'] = run
 
             status.update(label="Fin du traitement", state="complete", expanded=True)
             ss['train_ok'] = True
