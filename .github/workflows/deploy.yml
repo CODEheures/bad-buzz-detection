@@ -12,22 +12,41 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: production
+    env:
+      ENABLE_TRAIN: false
+      ENABLE_PREDICT: false
+      ADDR_TRAIN: ec2-51-20-248-99.eu-north-1.compute.amazonaws.com
+      ADDR_PREDICT: ec2-13.49.224.144.eu-north-1.compute.amazonaws.com
+      SECRET_TRAIN: ${{ secrets.EC2_TRAIN_SERVER_PEM }}
+      SECRET_PREDICT: ${{ secrets.EC2_PREDICT_SERVER_PEM }}
+      PEM_TRAIN: train_server.pem
+      PEM_PREDICT: predict_server.pem
+      SH_TRAIN: script-train-server.sh
+      SH_PREDICT: script-predict-server.sh
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: executing remote ssh commands using password
+    - name: Deploy on train serveur
+      if: ${{ env.ENABLE_TRAIN == 'true' }}
       run: |
-        echo "${{ secrets.EC2_TRAIN_SERVER_PEM }}" > train_server.pem
-        echo "${{ secrets.EC2_PREDICT_SERVER_PEM }}" > predict_server.pem
-        chmod 400 train_server.pem
-        chmod 400 predict_server.pem
+        echo "${{ env.SECRET_TRAIN }}" > ${{ env.PEM_TRAIN }}
+        chmod 400 ${{ env.PEM_TRAIN }}
         mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-        ssh-keyscan ec2-51-20-93-60.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
-        ssh-keyscan ec2-51-20-248-99.eu-north-1.compute.amazonaws.com >> ~/.ssh/known_hosts
+        ssh-keyscan ${{ env.ADDR_TRAIN }} >> ~/.ssh/known_hosts
         eval $(ssh-agent)
-        ssh-add - <<< "${{ secrets.EC2_TRAIN_SERVER_PEM }}"
-        ssh-add - <<< "${{ secrets.EC2_PREDICT_SERVER_PEM }}"
-        ssh -T -i "train_server.pem" ubuntu@ec2-51-20-248-99.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script-train-server.sh
-        ssh -T -i "predict_server.pem" ubuntu@ec2-51-20-93-60.eu-north-1.compute.amazonaws.com 'bash -s' < ./deploy/script-predict-server.sh
+        ssh-add - <<< "${{ env.SECRET_TRAIN }}"
+        ssh -T -i "${{ env.PEM_TRAIN }}" ubuntu@${{ env.ADDR_TRAIN }} 'bash -s' < ./deploy/${{ env.SH_TRAIN }}
+    
+    - name: Deploy on predict serveur
+      if: ${{ env.ENABLE_PREDICT == 'true' }}
+      run: |
+        echo "${{ env.SECRET_PREDICT }}" > ${{ env.PEM_PREDICT }}
+        chmod 400 ${{ env.PEM_PREDICT }}
+        mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+        ssh-keyscan ${{ env.ADDR_PREDICT }} >> ~/.ssh/known_hosts
+        eval $(ssh-agent)
+        ssh-add - <<< "${{ env.SECRET_PREDICT }}"
+        ssh -T -i "${{ env.PEM_PREDICT }}" ubuntu@${{ env.ADDR_PREDICT }} 'bash -s' < ./deploy/${{ env.SH_PREDICT }}
+    

@@ -2,9 +2,6 @@ import mlflow.pyfunc
 from common import params, setup_mlflow
 import pandas as pd
 
-setup_mlflow.init_mlflow()
-production_version = mlflow.pyfunc.load_model(f"models:/{params.model_name}@{params.alias}")
-
 
 class PredictResponse:
     """Give a synthetic predict response
@@ -33,6 +30,8 @@ def run(tweet: str) -> PredictResponse:
     Returns:
         PredictResponse: The redict response objetc. Contain "tweet", "predict" and "human_predict" attributes
     """
+    setup_mlflow.init_mlflow()
+    production_version = mlflow.pyfunc.load_model(f"models:/{params.model_name}@{params.alias}")
     response = production_version.predict(pd.DataFrame([tweet]))
     predict = response[0].item()
     predict_response = PredictResponse(tweet=tweet, predict=predict)
