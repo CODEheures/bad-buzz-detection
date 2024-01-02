@@ -126,7 +126,7 @@ def print_model_summary(model: Sequential):
     """Print a model summary in streamlit
 
     Args:
-        model (Sequential): the model to print
+        model (Sequential): the model to print on streamlit
     """
     stringlist = []
     model.summary(line_length=110, print_fn=lambda x: format_model_summary_line(x, stringlist))
