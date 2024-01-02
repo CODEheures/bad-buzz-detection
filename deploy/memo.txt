@@ -11,8 +11,9 @@ cd ./bad-buzz-detection
 git pull origin main
 sudo pip install -r requirements.txt
 sudo python3 -m nltk.downloader popular
-nohup sudo -b python3 -m streamlit run ./src/train.py --server.port 8501
-nohup sudo -b python3 -m streamlit run ./src/predict.py --server.port 8502
+nohup sudo -b python3 -m streamlit run ./src/train.py --server.port 8501  # train
+nohup sudo -b python3 -m streamlit run ./src/predict.py --server.port 8502 # predict
+nohup sudo -b python3 -m streamlit run ./src/test.py --server.port 8503 # test
 nohup sudo -b mlflow server --workers 1
 nohup sudo -b uvicorn --app-dir=./src --workers 1 main_api:app
 
