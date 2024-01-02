@@ -2,7 +2,6 @@ import mlflow.pyfunc
 from mlflow.pyfunc import PyFuncModel
 from common import params, setup_mlflow
 import pandas as pd
-import streamlit as st
 
 production_version: PyFuncModel = None
 
@@ -42,10 +41,8 @@ def run(tweet: str) -> PredictResponse:
     else:
         client = mlflow.MlflowClient()
         models = client.search_model_versions("name='air-paradis'")
-        st.write(production_version.metadata.get_model_info().run_id)
         for model in models:
             if (model.run_id == production_version.metadata.get_model_info().run_id) and ('production' not in model.aliases):
-                st.write('koko')
                 load = True
     if load:
         production_version = mlflow.pyfunc.load_model(f"models:/{params.model_name}@{params.alias}")
