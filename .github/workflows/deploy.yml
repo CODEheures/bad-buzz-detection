@@ -16,7 +16,7 @@ jobs:
       ENABLE_TRAIN: false
       ENABLE_PREDICT: true
       ADDR_TRAIN: ec2-51-20-248-99.eu-north-1.compute.amazonaws.com
-      ADDR_PREDICT: ec2-13.49.224.144.eu-north-1.compute.amazonaws.com
+      ADDR_PREDICT: ec2-13-49-224-144.eu-north-1.compute.amazonaws.com
       SECRET_TRAIN: ${{ secrets.EC2_TRAIN_SERVER_PEM }}
       SECRET_PREDICT: ${{ secrets.EC2_PREDICT_SERVER_PEM }}
       PEM_TRAIN: train_server.pem
