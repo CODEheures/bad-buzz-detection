@@ -111,8 +111,24 @@ def bert() -> Pipeline:
     return None
 
 
+def format_model_summary_line(x: str, stringlist: list):
+    """Format a model keras model summary line into a new string list
+
+    Args:
+        x (str): the line to format
+        stringlist (list): the string list to append the formatted line
+    """
+    if len(x.strip()) > 0:
+        stringlist.append(f'<div style="white-space:pre-wrap">{x}</div>')
+
+
 def print_model_summary(model: Sequential):
+    """Print a model summary in streamlit
+
+    Args:
+        model (Sequential): the model to print
+    """
     stringlist = []
-    model.summary(line_length=110, print_fn=lambda x: stringlist.append(f'<div style="white-space:pre-wrap">{x}</div>') if len(x.strip()) > 0 else None)
+    model.summary(line_length=110, print_fn=lambda x: format_model_summary_line(x, stringlist))
     short_model_summary = "\n".join(stringlist)
     st.write(short_model_summary, unsafe_allow_html=True)
