@@ -51,7 +51,7 @@ def publish_model():
                                 source=model_src,
                                 run_id=run.info.run_id,
                                 description=description,
-                                tags={'model': params.model_name(model),
+                                tags={'model': params.get_format_model(model),
                                       'entraineur': user_name})
 
     st.success(f"""Model enregistré dans le registre des models.
