@@ -11,10 +11,10 @@ class PredictResponse:
     """
     def __init__(self, tweet: str, predict: int):
         self.tweet = tweet
-        self.predict = 0 if predict == 0 else 1
-        self.human_predict = "negatif" if predict == 0 else "positif"
-        self.icon_positif = ":+1:" if predict > 0 else ""
-        self.icon_negatif = ":-1:" if predict == 0 else ""
+        self.predict = predict
+        self.human_predict = "negatif" if predict < 0.5 else "positif"
+        self.icon_positif = ":+1:" if predict >= 0.5 else ""
+        self.icon_negatif = ":-1:" if predict < 0.5 else ""
 
     def asdict(self):
         return {

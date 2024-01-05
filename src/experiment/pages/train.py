@@ -3,11 +3,14 @@ import streamlit as st
 from st_pages import add_page_title
 from streamlit import session_state as ss
 import mlflow
+import numpy as np
 import pandas as pd
 from common import params
 from streamlit_extras.switch_page_button import switch_page
 from experiment import pages_management
 from common.keras_callback import TrainCallback
+from keras.callbacks import EarlyStopping
+from sklearn.metrics import precision_score
 
 
 add_page_title()
@@ -24,9 +27,7 @@ with st.status("Preprocess data...", expanded=True) as status:
                 st.write([f"{key}: {value:.4f}"
                          for key, value
                          in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
-                st.markdown('2. Validation')
-                ss['score'] = ss['model'].score(ss['X_validation'], ss['y_validation'])
-                st.write(f"Score du model: {ss['score']:.4f}")
+
             elif (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_embedding):
                 mlflow.tensorflow.autolog()
                 st.markdown('1. Entrainement')
@@ -36,20 +37,22 @@ with st.status("Preprocess data...", expanded=True) as status:
                                 epochs=ss['epochs'],
                                 batch_size=ss['batch_size'],
                                 verbose=0,
-                                callbacks=[TrainCallback()]
+                                callbacks=[TrainCallback(),
+                                           EarlyStopping(monitor='val_precision', patience=3, restore_best_weights=True)]
                                 )
                 st.write([f"{key}: {value:.4f}"
                          for key, value
                          in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
-                st.markdown('2. Validation')
-                score = ss['model'].evaluate(ss['X_validation'],
-                                             ss['y_validation'],
-                                             batch_size=ss['batch_size'],
-                                             verbose=0,
-                                             callbacks=[TrainCallback()]
-                                             )
-                ss['score'] = score[1]
-                st.write(f"Accuracy du model: {ss['score']:.4f}")
+
+            st.markdown('2. Validation')
+            predict = ss['model'].predict(ss['X_validation']).reshape(-1)
+            predict = np.where(predict < 0.5, 0, 1)
+            st.write(list(ss['y_validation']))
+            st.write(list(predict))
+            score = precision_score(y_true=list(ss['y_validation']), y_pred=list(predict))
+            ss['score'] = score
+            st.write(f"Precision score du model: {ss['score']:.4f}")
+            mlflow.log_metrics({'val_precision': score})
 
             df_test = pd.DataFrame(ss['X_test'], columns=['text'])
             df_test['target'] = ss['y_test']

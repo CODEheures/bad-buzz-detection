@@ -10,6 +10,7 @@ from keras.layers import Dense
 from keras.layers import Flatten
 from keras.layers import Embedding
 from keras.layers import TextVectorization
+from keras.metrics import Precision
 from common import text_processing
 import streamlit as st
 
@@ -99,7 +100,7 @@ def keras_base(max_tokens=10000,
         model.add(Dropout(dense.dropout))
 
     model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[Precision()])
     return model
 
 

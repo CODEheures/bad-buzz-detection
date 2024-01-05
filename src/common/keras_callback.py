@@ -2,6 +2,7 @@ import math
 import streamlit as st
 from streamlit import session_state as ss
 from keras.callbacks import Callback
+import mlflow
 
 
 class TrainCallback(Callback):
@@ -23,7 +24,8 @@ class TrainCallback(Callback):
         with self.current_epoch.container():
             text = ''
             for key in list(logs.keys()):
-                text = text + f" - {key}={logs[key]:.5f}"
+                text = text + f"{key}={logs[key]:.5f}"
+                mlflow.log_metric(key, logs[key], step=epoch)
             st.progress(value=1.0, text=f"batch {self.batch_count}/{self.batch_count} - {text}")
 
     def on_train_batch_begin(self, batch, logs=None):
@@ -34,5 +36,5 @@ class TrainCallback(Callback):
         with self.current_epoch.container():
             text = ''
             for key in list(logs.keys()):
-                text = text + f" - {key}={logs[key]:.5f}"
+                text = text + f"{key}={logs[key]:.5f}"
             st.progress(value=batch/self.batch_count, text=f"batch {batch+1}/{self.batch_count} - {text}")
