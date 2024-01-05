@@ -3,7 +3,8 @@ from common import params, setup_mlflow
 import streamlit as st
 import pandas as pd
 import boto3
-from sklearn.metrics import accuracy_score
+import numpy as np
+from sklearn.metrics import precision_score
 from mlflow.entities.model_registry import ModelVersion
 
 setup_mlflow.init_mlflow()
@@ -49,10 +50,10 @@ def run():
             y = df['target']
 
             version = mlflow.pyfunc.load_model(f"models:/{selected_model.name}/{selected_model.version}")
-            predict = version.predict(X)
-
-            score = accuracy_score(y.to_list(), list(predict))
-            st.success(f'Score du model selectionné sur jeu de test: {score:.3f}')
+            predict = version.predict(X).reshape(-1)
+            predict = np.where(predict < 0.5, 0, 1)
+            precision = precision_score(y_true=y.to_list(), y_pred=list(predict))
+            st.success(f'Precision Score du model selectionné sur jeu de test: {precision:.3f}')
 
             st.divider()
             st.write('Jeu de test:')
