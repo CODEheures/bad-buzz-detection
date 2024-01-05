@@ -9,7 +9,6 @@ from mlflow.entities.model_registry import ModelVersion
 
 setup_mlflow.init_mlflow()
 client = mlflow.MlflowClient()
-models = client.search_model_versions("name='air-paradis'")
 
 
 def format_select_model(model: ModelVersion) -> str:
@@ -31,6 +30,7 @@ def run():
     """Entry point to display Test page
     """
     st.header("Test model", divider='rainbow')
+    models = client.search_model_versions("name='air-paradis'")
 
     selected_model = st.selectbox('Evaluer un model avec le jeu de test',
                                   [model for model in models],
