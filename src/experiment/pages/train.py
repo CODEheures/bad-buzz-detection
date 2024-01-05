@@ -38,7 +38,7 @@ with st.status("Preprocess data...", expanded=True) as status:
                                 batch_size=ss['batch_size'],
                                 verbose=0,
                                 callbacks=[TrainCallback(),
-                                           EarlyStopping(monitor='val_precision', patience=3, restore_best_weights=True)]
+                                           EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)]
                                 )
                 st.write([f"{key}: {value:.4f}"
                          for key, value
