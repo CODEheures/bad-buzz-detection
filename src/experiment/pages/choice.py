@@ -61,15 +61,27 @@ elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding):
                                  embedding_dim=embedding_dim,
                                  denses_layers=dense_layers)
     pipelines.print_model_summary(model)
-elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding):
+elif (seleted_model == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
     model = pipelines.keras_lstm(seed=params.seed)
-elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding):
+elif (seleted_model == params.model_enum.BERT_Transfert_learning):
     model = pipelines.bert(seed=params.seed)
 
 if model is not None and (type(model) is Pipeline) or (type(model) is Sequential):
     ss['selected_model'] = seleted_model
-    ss['model'] = model
     ss['choice_ok'] = True
     pages_management.update_pages()
     if st.button("Entrainer ce model"):
+        if (seleted_model == params.model_enum.SVM):
+            ss['model'] = model
+        elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding):
+            ss['model'] = model = pipelines.keras_base(max_tokens=max_tokens,
+                                                       max_sequence_length=max_sequence_length,
+                                                       embedding_dim=embedding_dim,
+                                                       denses_layers=dense_layers,
+                                                       adapt_vectorize_layer=True)
+        elif (seleted_model == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
+            pass
+        elif (seleted_model == params.model_enum.BERT_Transfert_learning):
+            pass
+
         switch_page("Entrainement model")
