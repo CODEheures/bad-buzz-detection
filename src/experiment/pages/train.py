@@ -47,8 +47,6 @@ with st.status("Preprocess data...", expanded=True) as status:
             st.markdown('2. Validation')
             predict = ss['model'].predict(ss['X_validation']).reshape(-1)
             predict = np.where(predict < 0.5, 0, 1)
-            st.write(list(ss['y_validation']))
-            st.write(list(predict))
             score = precision_score(y_true=list(ss['y_validation']), y_pred=list(predict))
             ss['score'] = score
             st.write(f"Precision score du model: {ss['score']:.4f}")

@@ -68,7 +68,8 @@ class DenseLayer:
 def keras_base(max_tokens=10000,
                max_sequence_length=50,
                embedding_dim=50,
-               denses_layers: list[DenseLayer] = [DenseLayer(32, 0.5)]) -> Sequential:
+               denses_layers: list[DenseLayer] = [DenseLayer(32, 0.5)],
+               adapt_vectorize_layer=False) -> Sequential:
     """Define model keras
 
     Args:
@@ -76,7 +77,7 @@ def keras_base(max_tokens=10000,
         max_sequence_length (int, optional): max sequence length for truncate or padding. Defaults to 50.
         embedding_dim (int, optional): vector dim dor embedding. Defaults to 50.
         denses_layers (list[DenseLayer], optional): Denses layers on model. Defaults to [DenseLayer(32, 0.5)].
-
+        adapt_vectorize_layer (bool, optional): To adapt vectorize layer (because it's a long task). Defaults is False
     Returns:
         Sequential: The keras model
     """
@@ -87,7 +88,10 @@ def keras_base(max_tokens=10000,
         output_mode='int',
         output_sequence_length=max_sequence_length)
 
-    vectorize_layer.adapt(ss['X_train'])
+    if adapt_vectorize_layer:
+        with st.spinner("""Adaptation du layer de vectorisation sur les données du jeu d\'entrainement.
+                         Cette opération peut être longue, patientez svp..."""):
+            vectorize_layer.adapt(ss['X_train'])
 
     model = Sequential()
     model.add(Input(shape=(1,), dtype=tf.string))
