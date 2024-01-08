@@ -11,6 +11,8 @@ from experiment import pages_management
 from common.keras_callback import TrainCallback
 from keras.callbacks import EarlyStopping
 from sklearn.metrics import precision_score
+import time
+from datetime import timedelta
 
 
 add_page_title()
@@ -19,6 +21,7 @@ st.header("Cette page permet d'entrainer un model et d'obtenir les scores et gra
 with st.status("Preprocess data...", expanded=True) as status:
     if (('train_ok' not in ss) or (ss['train_ok'] is False)):
         mlflow.end_run()
+        start_time = time.time()
         with mlflow.start_run() as run:
             if (ss['selected_model'] == params.model_enum.SVM):
                 mlflow.sklearn.autolog()
@@ -28,7 +31,8 @@ with st.status("Preprocess data...", expanded=True) as status:
                          for key, value
                          in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
 
-            elif (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_embedding):
+            elif (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_embedding) \
+                    or (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
                 mlflow.tensorflow.autolog()
                 st.markdown('1. Entrainement')
                 ss['model'].fit(ss['X_train'],
@@ -38,11 +42,18 @@ with st.status("Preprocess data...", expanded=True) as status:
                                 batch_size=ss['batch_size'],
                                 verbose=0,
                                 callbacks=[TrainCallback(),
-                                           EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)]
+                                           EarlyStopping(monitor='val_precision_1',
+                                                         mode='max',
+                                                         patience=3,
+                                                         restore_best_weights=True)]
                                 )
                 st.write([f"{key}: {value:.4f}"
                          for key, value
                          in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
+
+            time_delta = timedelta(seconds=round((time.time() - start_time), 0))
+            mlflow.log_metrics({'fit_time': time_delta.seconds})
+            ss['time_delta'] = time_delta
 
             st.markdown('2. Validation')
             predict = ss['model'].predict(ss['X_validation']).reshape(-1)
@@ -64,6 +75,7 @@ with st.status("Preprocess data...", expanded=True) as status:
             mlflow.log_input(dataset, context='test')
             ss['run'] = run
 
+            st.write(f"Entrainement fini en {ss['time_delta']}")
             status.update(label="Fin du traitement", state="complete", expanded=True)
             ss['train_ok'] = True
     else:
@@ -72,6 +84,7 @@ with st.status("Preprocess data...", expanded=True) as status:
                   in mlflow.get_run(run_id=ss['run'].info.run_id).data.metrics.items()])
         st.markdown('2. Validation')
         st.write(f"Score du model: {ss['score']:.4f}")
+        st.write(f"Entrainement fini en {ss['time_delta']}")
         status.update(label="Fin du traitement", state="complete", expanded=True)
 
 

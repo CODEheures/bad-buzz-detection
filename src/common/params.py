@@ -5,6 +5,10 @@ model_enum = Enum('Model', ['SVM',
                             'Tensorflow_Keras_base_embedding',
                             'Tensorflow_Keras_base_LSTM_embedding',
                             'BERT_Transfert_learning'])
+embedding_enum = Enum('Embedding', ['Trainable',
+                                    'GloVe'])
+pretraitement_enum = Enum('Pretraitement', ['Lemmatization',
+                                            'Stemming'])
 tracking_uri = "https://mlflow.air-paradis.codeheures.fr"
 s3_bucket = 'codeheures'
 s3_uri = f"s3://{s3_bucket}/mlflow-air-paradis/"
@@ -21,3 +25,10 @@ def get_format_model(model: model_enum):
         return 'Tensorflow Keras base + LSTM + embedding'
     elif (model == model_enum.BERT_Transfert_learning):
         return 'BERT avec transfert learning'
+
+
+def get_format_embedding(embedding: embedding_enum):
+    if (embedding == embedding_enum.Trainable):
+        return 'Nouvel Embedding entrainable'
+    elif (embedding == embedding_enum.GloVe):
+        return 'Embedding pré-entrainé GloVe'

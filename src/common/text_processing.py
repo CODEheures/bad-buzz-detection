@@ -1,6 +1,6 @@
 from nltk.corpus import stopwords
 from nltk import RegexpTokenizer
-from nltk.stem import WordNetLemmatizer
+from nltk.stem import WordNetLemmatizer, PorterStemmer
 
 
 def stop_words() -> list[str]:
@@ -24,8 +24,8 @@ def preprocess_text(text: str) -> str:
     return text.lower().strip()
 
 
-def tokenize(text: str) -> list[str]:
-    """Tokenizer
+def tokenize_lemmatize(text: str) -> list[str]:
+    """Tokenizer with lemmatizer
 
     Args:
         text (str): The text to tokenize
@@ -42,6 +42,29 @@ def tokenize(text: str) -> list[str]:
     tokens = [lemmatizer.lemmatize(word, pos='a') for word in tokens]
     tokens = [lemmatizer.lemmatize(word, pos='v') for word in tokens]
     tokens = [lemmatizer.lemmatize(word, pos='n') for word in tokens]
+
+    # Keep tokens with length > 2
+    tokens = [token for token in tokens if len(token) > 2]
+
+    return tokens
+
+
+def tokenize_stemming(text: str) -> list[str]:
+    """Tokenizer with stemming
+
+    Args:
+        text (str): The text to tokenize
+
+    Returns:
+        list[str]: Tokens
+    """
+    # Tokenization
+    tokenizer = RegexpTokenizer(r'\w+')
+    tokens = tokenizer.tokenize(text)
+
+    # Lematization
+    stemmer = PorterStemmer()
+    tokens = [stemmer.stem(word) for word in tokens]
 
     # Keep tokens with length > 2
     tokens = [token for token in tokens if len(token) > 2]
