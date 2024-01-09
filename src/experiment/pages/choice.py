@@ -7,7 +7,6 @@ from experiment import pages_management
 from sklearn.pipeline import Pipeline
 from keras.models import Sequential
 
-
 add_page_title()
 
 st.header("Cette page permet de choisir et de paramétrer un model", divider='rainbow')
@@ -57,8 +56,9 @@ elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding) \
                              placeholder="Selectionnez un embedding...")
     if embedding == params.embedding_enum.Trainable:
         embedding_dim = st.slider("Nombre de dimensions de l'embedding", min_value=10, max_value=300, value=50, step=1)
-    elif embedding == params.embedding_enum.GloVe:
-        embedding_dim = st.select_slider("Nombre de dimensions de l'embedding", options=[50, 100, 200, 300], value=50)
+    else:
+        dim = params.embedding_infos['models'][embedding.name]['parameters']['dimension']
+        embedding_dim = st.slider("Nombre de dimensions de l'embedding", min_value=10, max_value=300, value=dim, disabled=True)
 
     layers_count = st.slider("Nombre de couches denses", min_value=1, max_value=3, value=2, step=1)
     if seleted_model == params.model_enum.Tensorflow_Keras_base_embedding:
@@ -76,6 +76,7 @@ elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding) \
 
     ss['batch_size'] = st.slider("Taille des batchs", min_value=64, max_value=1024, value=128, step=64)
     ss['epochs'] = st.number_input("Nombre d'epochs", min_value=1, max_value=500, value=2)
+    ss['embedding'] = f"{embedding.name} + (dim={embedding_dim})"
 
     if seleted_model == params.model_enum.Tensorflow_Keras_base_embedding:
         model = pipelines.keras_base(max_tokens=max_tokens,

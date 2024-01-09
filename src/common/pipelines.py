@@ -14,11 +14,10 @@ from keras.layers import TextVectorization
 from keras.metrics import Precision
 from common import text_processing
 import streamlit as st
-import os
-import wget
-import zipfile
 import numpy as np
 from common import params
+from gensim.models.keyedvectors import KeyedVectors
+from gensim import downloader
 
 
 def svm(min_df: int,
@@ -125,7 +124,7 @@ def keras_base(max_tokens=10000,
 
 def keras_lstm(max_tokens=10000,
                max_sequence_length=50,
-               embedding=params.embedding_enum.GloVe,
+               embedding=params.embedding_enum.Trainable,
                embedding_dim=50,
                lstm_layers: list[LstmLayer] = [LstmLayer(32, 0.5)],
                adapt_vectorize_layer=False) -> Sequential:
@@ -215,41 +214,10 @@ def get_vectorized_layer(max_tokens: int, max_sequence_len: int, adapt=False) ->
     return vectorize_layer
 
 
-def load_glov(dim: int) -> dict[str, np.ndarray[any]]:
-    """Chargement de l'embedding pré-entrainé GloVe
-
-    Args:
-        dim (int): Dim of glov (50,100,200,300)
-
-    Returns:
-        dict[str, np.ndarray[any]]: Dictionnaire de l'embedding
-    """
-    current_dir = os.path.normpath(os.path.dirname(__file__))
-    download_dir = os.path.join(current_dir, "..", "..", "downloads")
-    glov_zip_path = os.path.join(download_dir, "glove.6B.zip")
-
-    if not os.path.exists(glov_zip_path):
-        with st.spinner("Téléchargement de l'embedding pré-entrainé GloVe"):
-            url = 'https://downloads.cs.stanford.edu/nlp/data/glove.6B.zip'
-            wget.download(url, glov_zip_path)
-            with zipfile.ZipFile(glov_zip_path, 'r') as zip_ref:
-                zip_ref.extractall(download_dir)
-
-    path_to_glove_file = os.path.join(download_dir, f"glove.6B.{dim}d.txt")
-    embeddings_index = {}
-    with open(path_to_glove_file, encoding='utf-8') as f:
-        for line in f:
-            word, coefs = line.split(maxsplit=1)
-            coefs = np.fromstring(coefs, "f", sep=" ")
-            embeddings_index[word] = coefs
-
-    return embeddings_index
-
-
 def get_embedding_matrix(num_tokens: int,
                          embedding_dim: int,
                          vocabulary: list[str],
-                         dict_pretrained: dict[str, np.ndarray[any]]) -> np.ndarray[float]:
+                         vectors: KeyedVectors) -> np.ndarray[float]:
     """Conversion du vocabulaire en matrice de vecteurs pré-entrainés
 
     Args:
@@ -265,9 +233,8 @@ def get_embedding_matrix(num_tokens: int,
     hits = 0
     misses = 0
     for index, word in enumerate(vocabulary):
-        embedding_vector = dict_pretrained.get(word)
-        if embedding_vector is not None:
-            embedding_matrix[index] = embedding_vector
+        if vectors.has_index_for(word):
+            embedding_matrix[index] = vectors.get_vector(word)
             hits += 1
         else:
             misses += 1
@@ -296,10 +263,14 @@ def get_embedding_layer(embedding: params.embedding_enum,
         layer = Embedding(input_dim=num_tokens, output_dim=output_dim, trainable=False)
         layer.build((1,))
         if len(vocabulary) > 2:
-            embedding_matrix = get_embedding_matrix(num_tokens=num_tokens,
-                                                    embedding_dim=output_dim,
-                                                    vocabulary=vocabulary,
-                                                    dict_pretrained=load_glov(output_dim))
+            with st.spinner(f"Téléchargement de l'embedding pré-entrainé {embedding.name}"):
+                vectors: KeyedVectors = downloader.load(embedding.name)
+
+            with st.spinner("Adapdation de l'embedding au vocabulaire"):
+                embedding_matrix = get_embedding_matrix(num_tokens=num_tokens,
+                                                        embedding_dim=output_dim,
+                                                        vocabulary=vocabulary,
+                                                        vectors=vectors)
             layer.set_weights([embedding_matrix])
 
     return layer

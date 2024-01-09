@@ -34,6 +34,7 @@ with st.status("Preprocess data...", expanded=True) as status:
             elif (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_embedding) \
                     or (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
                 mlflow.tensorflow.autolog()
+                mlflow.log_param('embedding', ss['embedding'])
                 st.markdown('1. Entrainement')
                 ss['model'].fit(ss['X_train'],
                                 ss['y_train'],
