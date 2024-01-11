@@ -6,6 +6,7 @@ from streamlit_extras.switch_page_button import switch_page
 from experiment import pages_management
 from sklearn.pipeline import Pipeline
 from keras.models import Sequential
+from transformers import Trainer
 
 add_page_title()
 
@@ -93,10 +94,18 @@ elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding) \
 
     pipelines.print_model_summary(model)
 elif (seleted_model == params.model_enum.BERT_Transfert_learning):
-    model = pipelines.bert(seed=params.seed)
+    max_sequence_length = st.slider("Nombre de tokens maxi dans un tweet", min_value=10, max_value=100, value=50, step=1)
+    batch_size = st.slider("Taille des batchs", min_value=16, max_value=1024, value=16, step=16)
+    epochs = st.number_input("Nombre d'epochs", min_value=1, max_value=500, value=2)
+    model = pipelines.bert(max_sequence_length=max_sequence_length,
+                           epochs=epochs,
+                           batch_size=batch_size)
 
 
-if model is not None and (type(model) is Pipeline) or (type(model) is Sequential):
+if model is not None and \
+   (type(model) is Pipeline) or \
+   (type(model) is Sequential) or \
+   (type(model) is Trainer):
     ss['selected_model'] = seleted_model
     ss['choice_ok'] = True
     pages_management.update_pages()
@@ -104,20 +113,23 @@ if model is not None and (type(model) is Pipeline) or (type(model) is Sequential
         if (seleted_model == params.model_enum.SVM):
             ss['model'] = model
         elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding):
-            ss['model'] = model = pipelines.keras_base(max_tokens=max_tokens,
-                                                       max_sequence_length=max_sequence_length,
-                                                       embedding=embedding,
-                                                       embedding_dim=embedding_dim,
-                                                       denses_layers=layers,
-                                                       adapt_vectorize_layer=True)
+            ss['model'] = pipelines.keras_base(max_tokens=max_tokens,
+                                               max_sequence_length=max_sequence_length,
+                                               embedding=embedding,
+                                               embedding_dim=embedding_dim,
+                                               denses_layers=layers,
+                                               adapt_vectorize_layer=True)
         elif (seleted_model == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
-            ss['model'] = model = pipelines.keras_lstm(max_tokens=max_tokens,
-                                                       max_sequence_length=max_sequence_length,
-                                                       embedding=embedding,
-                                                       embedding_dim=embedding_dim,
-                                                       lstm_layers=layers,
-                                                       adapt_vectorize_layer=True)
+            ss['model'] = pipelines.keras_lstm(max_tokens=max_tokens,
+                                               max_sequence_length=max_sequence_length,
+                                               embedding=embedding,
+                                               embedding_dim=embedding_dim,
+                                               lstm_layers=layers,
+                                               adapt_vectorize_layer=True)
         elif (seleted_model == params.model_enum.BERT_Transfert_learning):
-            pass
+            ss['model'] = pipelines.bert(max_sequence_length=max_sequence_length,
+                                         epochs=epochs,
+                                         batch_size=batch_size,
+                                         adapt_vectorize_layer=True)
 
         switch_page("Entrainement model")

@@ -1,6 +1,7 @@
 # Personalized
 cml/*
 !cml/test.py
+.tmp/
 
 # VsCode
 .vscode/

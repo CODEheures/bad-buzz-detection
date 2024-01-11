@@ -47,6 +47,9 @@ def run(tweet: str) -> PredictResponse:
     if load:
         production_version = mlflow.pyfunc.load_model(f"models:/{params.model_name}@{params.alias}")
     response = production_version.predict(pd.DataFrame([tweet]))
-    predict = response[0].item()
-    predict_response = PredictResponse(tweet=tweet, predict=predict)
+    if type(response) is pd.DataFrame:
+        predict = response.loc[0, 'label']
+    else:
+        predict = response[0]
+    predict_response = PredictResponse(tweet=tweet, predict=predict.item())
     return predict_response

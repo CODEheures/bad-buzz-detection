@@ -50,8 +50,12 @@ def run():
             y = df['target']
 
             version = mlflow.pyfunc.load_model(f"models:/{selected_model.name}/{selected_model.version}")
-            predict = version.predict(X).reshape(-1)
-            predict = np.where(predict < 0.5, 0, 1)
+            predict = version.predict(X)
+            if type(predict) is pd.DataFrame:
+                predict = predict['label']
+            else:
+                version.predict(X).reshape(-1)
+                predict = np.where(predict < 0.5, 0, 1)
             precision = precision_score(y_true=y.to_list(), y_pred=list(predict))
             st.success(f'Precision Score du model selectionné sur jeu de test: {precision:.3f}')
 

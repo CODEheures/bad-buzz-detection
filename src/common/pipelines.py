@@ -18,6 +18,11 @@ import numpy as np
 from common import params
 from gensim.models.keyedvectors import KeyedVectors
 from gensim import downloader
+from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
+import evaluate
+from datasets import Dataset
+
+bert_metric = evaluate.load("precision")
 
 
 def svm(min_df: int,
@@ -162,8 +167,53 @@ def keras_lstm(max_tokens=10000,
     return model
 
 
-def bert() -> Pipeline:
-    return None
+def bert(max_sequence_length=50, epochs=4, batch_size=16, adapt_vectorize_layer=False) -> Trainer:
+    model = AutoModelForSequenceClassification.from_pretrained(
+        "distilbert-base-uncased",
+        num_labels=2,
+        label2id={0: 0, 1: 1},
+        id2label={0: 0, 1: 1}
+    )
+
+    text_processing.tokenize_bert_max_length = max_sequence_length
+    training_args = TrainingArguments(
+        output_dir=".tmp/bert_trainer",
+        evaluation_strategy="epoch",
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
+        logging_steps=8,
+        num_train_epochs=epochs,
+    )
+
+    train_dataset = None
+    validation_dataset = None
+
+    if adapt_vectorize_layer:
+        train_df = Dataset.from_dict({"tweets": ss['X_train'], "labels": ss['y_train']})
+        validation_df = Dataset.from_dict({"tweets": ss['X_validation'], "labels": ss['y_validation']})
+
+        train_dataset = train_df.map(text_processing.tokenize_bert)
+        train_dataset = train_dataset.remove_columns(["tweets"])
+
+        validation_dataset = validation_df.map(text_processing.tokenize_bert)
+        validation_dataset = validation_dataset.remove_columns(["tweets"])
+
+    # Instantiate a `Trainer` instance that will be used to initiate a training run.
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=validation_dataset,
+        compute_metrics=compute_metrics,
+    )
+
+    return trainer
+
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    predictions = np.argmax(logits, axis=-1)
+    return bert_metric.compute(predictions=predictions, references=labels)
 
 
 def format_model_summary_line(x: str, stringlist: list):
