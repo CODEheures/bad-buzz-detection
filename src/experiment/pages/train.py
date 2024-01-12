@@ -13,6 +13,7 @@ from keras.callbacks import EarlyStopping
 from sklearn.metrics import precision_score
 import time
 from datetime import timedelta
+from transformers import pipeline, Trainer, AutoTokenizer
 
 
 add_page_title()
@@ -30,6 +31,7 @@ with st.status("Preprocess data...", expanded=True) as status:
                 st.write([f"{key}: {value:.4f}"
                          for key, value
                          in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
+                predict = ss['model'].predict(ss['X_validation']).reshape(-1)
 
             elif (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_embedding) \
                     or (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
@@ -51,14 +53,41 @@ with st.status("Preprocess data...", expanded=True) as status:
                 st.write([f"{key}: {value:.4f}"
                          for key, value
                          in mlflow.get_run(run_id=run.info.run_id).data.metrics.items()])
+                predict = ss['model'].predict(ss['X_validation']).reshape(-1)
+                predict = np.where(predict < 0.5, 0, 1)
+
+            elif (ss['selected_model'] == params.model_enum.BERT_Transfert_learning):
+                mlflow.transformers.autolog()
+                trainer: Trainer = ss['model']
+                trainer.train()
+                tuned_pipeline = pipeline(task="text-classification",
+                                          model=trainer.model,
+                                          batch_size=8,
+                                          tokenizer=AutoTokenizer.from_pretrained("distilbert-base-uncased"),
+                                          device="cpu",
+                                          )
+                model_config = {"batch_size": 8}
+                signature = mlflow.models.infer_signature(
+                    ["This is a tweet!", "And this is also a tweet."],
+                    mlflow.transformers.generate_signature_output(
+                        tuned_pipeline, ["This is a tweet response!", "So is this."]
+                    ),
+                    params=model_config,
+                )
+                model_info = mlflow.transformers.log_model(transformers_model=tuned_pipeline,
+                                                           artifact_path="model",
+                                                           signature=signature,
+                                                           input_example=["This is a good day", "This is a sa day"],
+                                                           model_config=model_config,
+                                                           )
+                predict = tuned_pipeline(list(ss['X_validation']))
+                predict = pd.DataFrame(predict)['label']
 
             time_delta = timedelta(seconds=round((time.time() - start_time), 0))
             mlflow.log_metrics({'fit_time': time_delta.seconds})
             ss['time_delta'] = time_delta
 
             st.markdown('2. Validation')
-            predict = ss['model'].predict(ss['X_validation']).reshape(-1)
-            predict = np.where(predict < 0.5, 0, 1)
             score = precision_score(y_true=list(ss['y_validation']), y_pred=list(predict))
             ss['score'] = score
             st.write(f"Precision score du model: {ss['score']:.4f}")
@@ -79,6 +108,7 @@ with st.status("Preprocess data...", expanded=True) as status:
             st.write(f"Entrainement fini en {ss['time_delta']}")
             status.update(label="Fin du traitement", state="complete", expanded=True)
             ss['train_ok'] = True
+
     else:
         st.write([f"{key}: {value:.4f}"
                   for key, value

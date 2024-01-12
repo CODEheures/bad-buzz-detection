@@ -1,6 +1,11 @@
 from nltk.corpus import stopwords
 from nltk import RegexpTokenizer
 from nltk.stem import WordNetLemmatizer, PorterStemmer
+from transformers import AutoTokenizer
+from torch.utils.data import Dataset
+
+bert_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
+tokenize_bert_max_length = 50
 
 
 def stop_words() -> list[str]:
@@ -70,3 +75,14 @@ def tokenize_stemming(text: str) -> list[str]:
     tokens = [token for token in tokens if len(token) > 2]
 
     return tokens
+
+
+def tokenize_bert(dataset: Dataset):
+    # Pad/truncate each text to 512 tokens. Enforcing the same shape
+    # could make the training faster.
+    return bert_tokenizer(
+        dataset["tweets"],
+        padding="max_length",
+        truncation=True,
+        max_length=tokenize_bert_max_length,
+    )
