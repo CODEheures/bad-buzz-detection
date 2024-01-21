@@ -178,11 +178,17 @@ def bert(max_sequence_length=50, epochs=4, batch_size=16, adapt_vectorize_layer=
     text_processing.tokenize_bert_max_length = max_sequence_length
     training_args = TrainingArguments(
         output_dir=".tmp/bert_trainer",
-        evaluation_strategy="epoch",
+        evaluation_strategy="steps",
+        save_strategy="steps",
+        eval_steps=0.05,
+        save_steps=0.05,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         logging_steps=8,
         num_train_epochs=epochs,
+        load_best_model_at_end=True,
+        metric_for_best_model='eval_precision',
+        greater_is_better=True
     )
 
     train_dataset = None

@@ -1,6 +1,5 @@
 # import plotly.express as px
 
-
 def run():
     """Write some commentaries in Pull request.
     We can improve this function to give some decision elements to user who merge the pull request
