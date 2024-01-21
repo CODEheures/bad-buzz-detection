@@ -49,7 +49,7 @@ def tokenize_lemmatize(text: str) -> list[str]:
     tokens = [lemmatizer.lemmatize(word, pos='n') for word in tokens]
 
     # Keep tokens with length > 2
-    tokens = [token for token in tokens if len(token) > 2]
+    tokens = [token for token in tokens if len(token) > 1]
 
     return tokens
 
@@ -72,7 +72,7 @@ def tokenize_stemming(text: str) -> list[str]:
     tokens = [stemmer.stem(word) for word in tokens]
 
     # Keep tokens with length > 2
-    tokens = [token for token in tokens if len(token) > 2]
+    tokens = [token for token in tokens if len(token) > 1]
 
     return tokens
 
