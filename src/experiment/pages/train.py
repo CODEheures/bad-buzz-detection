@@ -104,7 +104,9 @@ with st.status("Preprocess data...", expanded=True) as status:
 
                 # TESTS
                 pipeline_score = tuned_pipeline(list(X_test))
-                y_score = list(pd.DataFrame(pipeline_score)['score'])
+                y_score = pd.DataFrame(pipeline_score)
+                y_score['inversed'] = y_score.apply(lambda x: x['score'] if x['label'] == 1 else (1 - x['score']), axis=1)
+                y_score = list(y_score['inversed'])
                 predictions = list(pd.DataFrame(pipeline_score)['label'])
 
             mlflow.set_tag('model', params.get_format_model_short(ss['selected_model']))

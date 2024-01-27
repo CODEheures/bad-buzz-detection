@@ -59,7 +59,7 @@ def run(tweet: str) -> PredictResponse:
 
     response = production_version.predict(pd.DataFrame([tweet]))
     if type(response) is pd.DataFrame:
-        predict = response.loc[0, 'label']
+        predict = response.loc[0, 'score'] if response.loc[0, 'label'] == 1 else 1 - response.loc[0, 'score']
     else:
         predict = response[0]
     predict_response = PredictResponse(tweet=tweet, predict=predict.item(), model_version=model_version)
