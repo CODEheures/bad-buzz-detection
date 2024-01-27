@@ -12,13 +12,15 @@ def init_mlflow():
     mlflow.tracking.MlflowClient(tracking_uri=params.tracking_uri)
 
 
-def init_tracking(experiment_name: str):
+def init_tracking():
     """Initialized the tracking on train
 
     Args:
         experiment_name (str): Name of the experiment; Ex: air-paradis
     """
     init_mlflow()
+
+    experiment_name = params.model_name
 
     experiment = mlflow.get_experiment_by_name(experiment_name)
     if experiment is None:

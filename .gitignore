@@ -2,6 +2,8 @@
 cml/*
 !cml/test.py
 .tmp/
+wandb/
+test*.png
 
 # VsCode
 .vscode/
