@@ -6,7 +6,7 @@ from streamlit_extras.switch_page_button import switch_page
 from common import setup_mlflow
 
 
-setup_mlflow.init_tracking('air-paradis')
+setup_mlflow.init_tracking()
 add_page_title()
 
 st.subheader("Entrainement en ligne de modèles pour de l'analyse de sentiment\n\

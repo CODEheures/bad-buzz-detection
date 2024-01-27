@@ -11,7 +11,7 @@ from keras.layers import LSTM
 from keras.layers import Flatten
 from keras.layers import Embedding
 from keras.layers import TextVectorization
-from keras.metrics import Precision
+from keras.metrics import AUC
 from common import text_processing
 import streamlit as st
 import numpy as np
@@ -22,7 +22,7 @@ from transformers import AutoModelForSequenceClassification, TrainingArguments, 
 import evaluate
 from datasets import Dataset
 
-bert_metric = evaluate.load("precision")
+bert_metric = evaluate.load("roc_auc")
 
 
 def svm(min_df: int,
@@ -123,7 +123,7 @@ def keras_base(max_tokens=10000,
         model.add(Dropout(dense.dropout))
 
     model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[Precision()])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[AUC()])
     return model
 
 
@@ -163,7 +163,7 @@ def keras_lstm(max_tokens=10000,
         model.add(LSTM(lstm_layer.units, return_sequences=return_sequences, dropout=lstm_layer.dropout))
 
     model.add(Dense(1, activation='sigmoid'))
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[Precision()])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[AUC()])
     return model
 
 
@@ -180,14 +180,14 @@ def bert(max_sequence_length=50, epochs=4, batch_size=16, adapt_vectorize_layer=
         output_dir=".tmp/bert_trainer",
         evaluation_strategy="steps",
         save_strategy="steps",
-        eval_steps=0.05,
-        save_steps=0.05,
+        eval_steps=0.25,
+        save_steps=0.25,
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         logging_steps=8,
         num_train_epochs=epochs,
         load_best_model_at_end=True,
-        metric_for_best_model='eval_precision',
+        metric_for_best_model='eval_roc_auc',
         greater_is_better=True
     )
 
@@ -219,7 +219,7 @@ def bert(max_sequence_length=50, epochs=4, batch_size=16, adapt_vectorize_layer=
 def compute_metrics(eval_pred):
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
-    return bert_metric.compute(predictions=predictions, references=labels)
+    return bert_metric.compute(prediction_scores=predictions, references=labels)
 
 
 def format_model_summary_line(x: str, stringlist: list):

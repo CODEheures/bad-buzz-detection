@@ -32,11 +32,22 @@ def get_format_model(model: model_enum):
     if (model == model_enum.SVM):
         return 'SVM (Support Vector Machine)'
     elif (model == model_enum.Tensorflow_Keras_base_embedding):
-        return 'Tensorflow Keras base + embedding'
+        return 'Réseau de neurones dense'
     elif (model == model_enum.Tensorflow_Keras_base_LSTM_embedding):
-        return 'Tensorflow Keras base + LSTM + embedding'
+        return 'Réseau de neurones LSTM'
     elif (model == model_enum.BERT_Transfert_learning):
-        return 'BERT avec transfert learning'
+        return 'BERT'
+
+
+def get_format_model_short(model: model_enum):
+    if (model == model_enum.SVM):
+        return 'svm'
+    elif (model == model_enum.Tensorflow_Keras_base_embedding):
+        return 'dense'
+    elif (model == model_enum.Tensorflow_Keras_base_LSTM_embedding):
+        return 'lstm'
+    elif (model == model_enum.BERT_Transfert_learning):
+        return 'bert'
 
 
 def get_format_embedding(embedding: embedding_enum):
