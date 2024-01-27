@@ -146,9 +146,6 @@ with st.status("Preprocess data...", expanded=True) as status:
             df_test.to_csv(file_name, index=False)
             mlflow.log_artifact(file_name, 'df_test')
             os.remove(file_name)
-            uri = mlflow.get_artifact_uri('df_test') + '/' + file_name
-            dataset = mlflow.data.from_pandas(df_test, uri)
-            mlflow.log_input(dataset, context='test')
             ss['run'] = run
 
             st.write(f"Entrainement fini en {ss['time_delta']}")
