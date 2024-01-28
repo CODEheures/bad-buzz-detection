@@ -52,6 +52,8 @@ with st.status("Preprocess data...", expanded=True) as status:
                     or (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
                 mlflow.tensorflow.autolog()
                 mlflow.log_param('embedding', ss['embedding'])
+                mlflow.log_param('layers_count', ss['layers_count'])
+                mlflow.log_param('layers', ss['layers'])
                 st.markdown('1. Entrainement')
                 model.fit(X_train,
                           y_train,
