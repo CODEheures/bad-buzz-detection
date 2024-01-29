@@ -62,6 +62,8 @@ elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding) \
         embedding_dim = st.slider("Nombre de dimensions de l'embedding", min_value=10, max_value=300, value=dim, disabled=True)
 
     layers_count = st.slider("Nombre de couches denses", min_value=1, max_value=3, value=2, step=1)
+    ss['layers_count'] = layers_count
+    ss['layers'] = ''
     if seleted_model == params.model_enum.Tensorflow_Keras_base_embedding:
         layers: pipelines.DenseLayer = []
     elif seleted_model == params.model_enum.Tensorflow_Keras_base_LSTM_embedding:
@@ -70,6 +72,7 @@ elif (seleted_model == params.model_enum.Tensorflow_Keras_base_embedding) \
         st.markdown(f'#### Couche {i}')
         units = st.slider("Nombre de neuronnes", min_value=1, max_value=128, value=16, step=1, key=f'dense_units_{i}')
         dropout = st.slider("Dropout", min_value=0.0, max_value=1.0, value=0.0, step=0.1, key=f'dense_dropout_{i}')
+        ss['layers'] = ss['layers'] + ('/' if i > 0 else '') + (f'{units}-{0 if dropout == 0 else dropout}')
         if seleted_model == params.model_enum.Tensorflow_Keras_base_embedding:
             layers.append(pipelines.DenseLayer(units=units, dropout=dropout))
         elif seleted_model == params.model_enum.Tensorflow_Keras_base_LSTM_embedding:

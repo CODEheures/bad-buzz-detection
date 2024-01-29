@@ -52,6 +52,8 @@ with st.status("Preprocess data...", expanded=True) as status:
                     or (ss['selected_model'] == params.model_enum.Tensorflow_Keras_base_LSTM_embedding):
                 mlflow.tensorflow.autolog()
                 mlflow.log_param('embedding', ss['embedding'])
+                mlflow.log_param('layers_count', ss['layers_count'])
+                mlflow.log_param('layers', ss['layers'])
                 st.markdown('1. Entrainement')
                 model.fit(X_train,
                           y_train,
@@ -146,9 +148,6 @@ with st.status("Preprocess data...", expanded=True) as status:
             df_test.to_csv(file_name, index=False)
             mlflow.log_artifact(file_name, 'df_test')
             os.remove(file_name)
-            uri = mlflow.get_artifact_uri('df_test') + '/' + file_name
-            dataset = mlflow.data.from_pandas(df_test, uri)
-            mlflow.log_input(dataset, context='test')
             ss['run'] = run
 
             st.write(f"Entrainement fini en {ss['time_delta']}")
