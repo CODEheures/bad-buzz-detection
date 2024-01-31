@@ -10,9 +10,14 @@ See it at https://train.air-paradis.codeheures.fr
 This is a web page which we can validate model for production.
 See it at https://mlflow.air-paradis.codeheures.fr
 
-## Production 
+## Api Prédiction
+This is an api end point to predict tweet sentiment.
+See it at https://predict.air-paradis.codeheures.fr/predict?tweet=good
+
+## Prédiction Page
 This is a web page for end user. End user can predict tweet sentiment with this page.
 See it at https://predict.air-paradis.codeheures.fr
+
 
 ## CI/CD
 This repo use Continuous Integrating for Machine learning
